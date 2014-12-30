@@ -2,8 +2,8 @@ module Units (tests) where
 
 import Control.Applicative
 
-import Data.ByteString.Lazy (ByteString)
-import qualified Data.ByteString.Lazy as BL
+import Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
 import Data.Binary
 import Data.Bits
 import Data.Char
@@ -80,9 +80,9 @@ notDict (i, s) = testCase ("Not in dictionary #" ++ show i)
     (assertBool "wrong word" . isNothing $ mnemonicToKey s)
 
 integerToBS :: Integer -> ByteString
-integerToBS 0 = BL.pack [0]
+integerToBS 0 = BS.pack [0]
 integerToBS i 
-    | i > 0     = BL.pack $ reverse $ unfoldr f i
+    | i > 0     = BS.pack $ reverse $ unfoldr f i
     | otherwise = error "integerToBS not defined for negative values"
   where 
     f 0 = Nothing
@@ -90,13 +90,13 @@ integerToBS i
 
 hexToBS :: String -> ByteString
 hexToBS str
-    | null str  = BL.empty
-    | otherwise = BL.append z2 r2
+    | null str  = BS.empty
+    | otherwise = BS.append z2 r2
   where 
     (z,r) = span (== '0') $ filter (/= ' ') str
-    z2    = BL.replicate (fromIntegral $ length z `div` 2) 0
+    z2    = BS.replicate (fromIntegral $ length z `div` 2) 0
     r1    = readHex r
-    r2 | null r    = BL.empty
+    r2 | null r    = BS.empty
        | null r1   = error $ "cannot read hex"
        | otherwise = integerToBS $ fst $ head r1
 
@@ -122,7 +122,7 @@ vectorsLC =
 
 encodeTest :: (Int, TestVector) -> Test
 encodeTest (i, (bs, m)) = testCase ("Encode #" ++ show i)
-    (bs @=? fromMaybe BL.empty (mnemonicToKey m))
+    (bs @=? fromMaybe BS.empty (mnemonicToKey m))
 
 decodeTest :: (Int, TestVector) -> Test
 decodeTest (i, (bs, hk)) = testCase ("Decode #" ++ show i)
