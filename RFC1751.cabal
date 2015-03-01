@@ -23,7 +23,8 @@ library
   exposed-modules:   Data.RFC1751
   build-depends:     base ==4.*,
                      binary,
-                     bytestring
+                     bytestring,
+                     vector
 
 test-suite test-haskoin-crypto
     type:              exitcode-stdio-1.0
@@ -33,6 +34,7 @@ test-suite test-haskoin-crypto
     build-depends:     base,
                        binary,
                        bytestring,
+                       vector,
                        RFC1751,
                        QuickCheck,
                        test-framework,

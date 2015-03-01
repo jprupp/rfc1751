@@ -13,7 +13,8 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BL
 import Data.Bits
 import Data.Char
-import Data.List
+import Data.Vector (Vector, (!), fromList)
+import qualified Data.Vector as V
 
 encodeWord64 :: Word64 -> ByteString
 encodeWord64 = BS.concat . BL.toChunks . encode
@@ -25,7 +26,7 @@ decodeWord64 = decode . BL.fromChunks . return
 mnemonicToKey :: String -> Maybe ByteString
 mnemonicToKey s = do
     guard $ length ws == 12
-    BS.concat <$> mapM ((encodeWord64 <$>) . wordsToKey) [ws1, ws2]
+    BS.concat <$> mapM ((encodeWord64 <$>) . wordsToKey) [fromList ws1, fromList ws2]
   where
     ws = words $ map toUpper s
     (ws1, ws2) = splitAt 6 ws
@@ -40,21 +41,21 @@ keyToMnemonic k = do
 
 keyToWords :: Word64 -> [String]
 keyToWords key =
-    map ((dict !!) . fromIntegral) indices
+    map ((dict !) . fromIntegral) indices
   where
     keyCheckSum = checkSum key
     tempIndices = map (\start -> extract key start 11) [0,11..55]
     indices = init tempIndices ++ [last tempIndices .|. keyCheckSum]
 
-wordsToKey :: [String] -> Maybe Word64
+wordsToKey :: Vector String -> Maybe Word64
 wordsToKey ws = do
-    let findWord w   = fromIntegral <$> elemIndex w dict
-        maybeIndices = sequence $ map findWord ws
+    let findWord w   = fromIntegral <$> V.elemIndex w dict
+        maybeIndices = V.sequence $ V.map findWord ws
     indices <- maybeIndices
     let buildKey acc (bits, index) = (index `shift` bits) .|. acc
-        key = foldl buildKey 0 $ zip [53,42..(-2)] indices
+        key = V.foldl buildKey 0 $ V.zip (fromList [53,42..(-2)]) indices
         computedSum = checkSum key
-        providedSum = last indices .&. 0x03
+        providedSum = V.last indices .&. 0x03
     guard $ providedSum == computedSum
     return key
 
@@ -72,8 +73,8 @@ extract key start len =
     mask = complement $ 0xffffffffffffffff `shiftL` count
     temp = key `shiftR` (64 - start - count) .&. mask
 
-dict :: [String]
-dict =
+dict :: Vector String
+dict = fromList
   [ "A", "ABE", "ACE", "ACT", "AD", "ADA", "ADD", "AGO", "AID"
   , "AIM", "AIR", "ALL", "ALP", "AM", "AMY", "AN", "ANA", "AND"
   , "ANN", "ANT", "ANY", "APE", "APS", "APT", "ARC", "ARE", "ARK"
