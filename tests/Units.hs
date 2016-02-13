@@ -86,7 +86,7 @@ integerToBS i
     | otherwise = error "integerToBS not defined for negative values"
   where 
     f 0 = Nothing
-    f x = Just $ (fromInteger x :: Word8, x `shiftR` 8)
+    f x = Just (fromInteger x :: Word8, x `shiftR` 8)
 
 hexToBS :: String -> ByteString
 hexToBS str
@@ -97,7 +97,7 @@ hexToBS str
     z2    = BS.replicate (fromIntegral $ length z `div` 2) 0
     r1    = readHex r
     r2 | null r    = BS.empty
-       | null r1   = error $ "cannot read hex"
+       | null r1   = error "cannot read hex"
        | otherwise = integerToBS $ fst $ head r1
 
 vectors :: [TestVector]

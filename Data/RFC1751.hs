@@ -63,7 +63,7 @@ checkSum :: Word64 -> Word64
 checkSum key =
     pairSum .&. 0x03
   where
-    pairSum = sum $ map (flip (extract key) $ 2) [0,2..62]
+    pairSum = sum $ map (flip (extract key) 2) [0,2..62]
 
 extract :: Word64 -> Int -> Int -> Word64
 extract key start len =
