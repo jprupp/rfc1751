@@ -4,29 +4,25 @@ module Data.RFC1751
     , mnemonicToKey
     ) where
 
-import Control.Applicative
-import Control.Monad
+import           Control.Monad
+import           Data.Bits
+import           Data.ByteString     (ByteString)
+import qualified Data.ByteString     as BS
+import           Data.Char
+import           Data.Either
+import           Data.Serialize
+import           Data.Vector         (Vector, fromList, (!))
+import qualified Data.Vector         as V
+import           Data.Word
 
-import Data.Binary
-import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BL
-import Data.Bits
-import Data.Char
-import Data.Vector (Vector, (!), fromList)
-import qualified Data.Vector as V
-
-encodeWord64 :: Word64 -> ByteString
-encodeWord64 = BS.concat . BL.toChunks . encode
-
-decodeWord64 :: ByteString -> Word64
-decodeWord64 = decode . BL.fromChunks . return
+unsafeDecode :: ByteString -> Word64
+unsafeDecode = fromRight (error "Could not decode") . decode
 
 -- | Decode a mnemonic sentence to a 128-bit key.
 mnemonicToKey :: String -> Maybe ByteString
 mnemonicToKey s = do
     guard $ length ws == 12
-    BS.concat <$> mapM ((encodeWord64 <$>) . wordsToKey) [fromList ws1, fromList ws2]
+    BS.concat <$> mapM ((encode <$>) . wordsToKey) [fromList ws1, fromList ws2]
   where
     ws = words $ map toUpper s
     (ws1, ws2) = splitAt 6 ws
@@ -35,7 +31,7 @@ mnemonicToKey s = do
 keyToMnemonic :: ByteString -> Maybe String
 keyToMnemonic k = do
     guard $ BS.length k == 16
-    return . unwords . concat $ map (keyToWords . decodeWord64) [k1, k2]
+    return . unwords . concat $ map (keyToWords . unsafeDecode) [k1, k2]
   where
     (k1, k2) = BS.splitAt 8 k
 

@@ -1,0 +1,32 @@
+name: RFC1751
+version: 1.0.0
+synopsis: RFC-1751 library for Haskell
+description: Convert 128-bit ByteString to/from 12 English words.
+category: Data
+author: Jean-Pierre Rupp
+maintainer: xenog@protonmail.com
+license: PublicDomain
+license-file: UNLICENSE
+github: xenog/rfc-1751.git
+dependencies:
+- bytestring
+- cereal
+- vector
+library:
+  source-dirs:
+  - src
+  exposed-modules:
+  - Data.RFC1751
+  dependencies:
+  - base ==4.*
+tests:
+  test-rfc1751:
+    main: Spec.hs
+    source-dirs:
+    - tests
+    ghc-options: -Wall
+    dependencies:
+    - base
+    - hspec
+    - RFC1751
+    - QuickCheck
