@@ -1,5 +1,5 @@
 -- | RFC-1751 human-readable 128-bit keys
-module Data.RFC1751
+module Crypto.RFC1751
     ( keyToMnemonic
     , mnemonicToKey
     ) where

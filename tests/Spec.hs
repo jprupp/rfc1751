@@ -1,11 +1,11 @@
 import           Control.Monad
+import           Crypto.RFC1751
 import           Data.Bits
 import           Data.ByteString       (ByteString)
 import qualified Data.ByteString       as BS
 import           Data.Char
 import           Data.List
 import           Data.Maybe
-import           Data.RFC1751
 import           Data.Serialize
 import           Data.Word
 import           Numeric
