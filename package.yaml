@@ -1,12 +1,12 @@
 name: rfc1751
-version: 0.1.2
+version: 0.1.3
 synopsis: RFC-1751 library for Haskell
 description: Convert 128-bit ByteString to/from 12 English words.
 category: Crypto
 author: Jean-Pierre Rupp
 maintainer: xenog@protonmail.com
-license: PublicDomain
-license-file: UNLICENSE
+license: MIT
+license-file: LICENSE
 github: xenog/rfc1751.git
 dependencies:
   - bytestring
